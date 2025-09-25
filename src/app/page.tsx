@@ -652,15 +652,15 @@ const scrollToTop = () => {
       
       {data && (
         <div className="space-y-10 mt-10">
-          <div className="button-container">
-            <button
-              onClick={() => generateDocxReport(data)}
-              className="download-button"
-            >
-              <Download size={22} />
-              Download Report (DOCX)
-            </button>
-          </div>
+        <div className="button-container">
+  <button
+    onClick={() => generateDocxReport(data)}
+    className="download-button"
+    aria-label="Download report as DOCX">
+    <Download size={16} />
+    Download Report
+  </button>
+</div>
 
           {/* ToR */}
           <section className="section bg-white shadow-md rounded-lg p-4">
@@ -845,7 +845,7 @@ const scrollToTop = () => {
                           {<div className="scores-subitem flex justify-between text-gray-700 mt-2">
                           <span>  </span>
                           <span className="text-xs italic text-">
-                            (This score is approximate and can fluctuate by plus or minus 5)
+                            ( This score is approximate; it may vary by ±5)
                           </span>
                           
                           </div>}
@@ -886,7 +886,7 @@ const scrollToTop = () => {
           <section className="section bg-white shadow-md rounded-lg p-4">
             <h2 className="section-header flex items-center gap-2 text-xl font-semibold text-gray-900">
               <span className="section-icon text-blue-600">📋</span>
-              Comparison Ranking
+              Ranking
             </h2>
             <div className="table-container mt-4 overflow-x-auto">
               <table className="w-full border-collapse">
@@ -991,7 +991,7 @@ const scrollToTop = () => {
           <section className="section bg-white shadow-md rounded-lg p-4">
             <h2 className="section-header flex items-center gap-2 text-xl font-semibold text-gray-900">
               <span className="section-icon text-blue-600">📊</span>
-              CV Comparison Table
+              CV Comparison Matrix
             </h2>
             <div className="table-container mt-4 overflow-x-auto">
               <table className="w-full border-collapse bg-white shadow-sm rounded-lg overflow-hidden">
