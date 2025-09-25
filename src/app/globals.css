@@ -55,10 +55,23 @@ nav {
 
 nav .logo-container img {
   transition: transform 0.3s ease-in-out;
+  height: 60px;
+  width: auto;
 }
 
 nav .logo-container:hover img {
   transform: scale(1.1);
+}
+
+nav .item-center {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 370px;
+}
+
+nav h1 .color{
+  color: #991b1b;
 }
 
 nav .text-red-800 {
@@ -172,7 +185,7 @@ input[type="file"]::file-selector-button {
 }
 
 input[type="file"]::file-selector-button:hover {
-  background: #a80f0f; /* blue-600 */
+  background: #2563eb; /* blue-600 */
   transform: translateY(-1px);
 }
 
@@ -552,4 +565,418 @@ tbody tr:hover {
   h1 {
     font-size: clamp(1.5rem, 4vw, 1.75rem); /* 24px to 28px */
   }
+}
+/* Reset default button styles */
+.download-button {
+  display: inline-flex;
+  align-items: flex-end;
+  justify-content: end;
+  gap: 12px;
+  padding: 14px 32px;
+  background: linear-gradient(90deg, #4f46e5, #3b82f6);
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  border: 1px solid #c7d2fe;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: all 0.5s ease;
+  outline: none;
+  margin-left: 1028px;
+}
+
+.download-button:hover {
+  background: linear-gradient(90deg, #6366f1, #1e40af);
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.5);
+  transform: scale(1.05);
+  animation: pulse 1.5s infinite;
+}
+
+.download-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.3);
+}
+
+.download-button svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Pulse animation for hover effect */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 6px 16px rgba(79, 70, 229, 0.5);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Container for left alignment (top button) */
+.button-container {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 10px;
+}
+
+/* Container for center alignment (bottom button) */
+.button-container-center {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+/* -------------------------------
+   Header Card Styling
+---------------------------------*/
+.header-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: 900px;
+  margin: 0 auto 20px auto;
+}
+
+.logo-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.header-card h1 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+/* -------------------------------
+   Job Description Card
+---------------------------------*/
+.job-description-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  max-width: 800px;
+  margin: 0 auto 20px auto;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.card-header h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.view-full-btn {
+  background: none;
+  border: none;
+  color: #8f0505;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.view-full-btn:hover {
+  background: #f3f4f6;
+}
+
+.job-preview {
+  background: #f8f9ff;
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+}
+
+.job-preview h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #371f20;
+  margin: 0 0 12px 0;
+}
+
+.job-content p {
+  color: #6b7280;
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+/* -------------------------------
+   File Upload Card
+---------------------------------*/
+.file-upload-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.file-upload-card h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 20px 0;
+}
+
+/* -------------------------------
+   Dropzone Styling
+---------------------------------*/
+.dropzone-area {
+  background: #f0f9f0;
+  border: 2px dashed #a7f3a7;
+  border-radius: 16px;
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 20px;
+  max-height: 180px;
+  position: relative;
+}
+
+.dropzone-area:hover, .dropzone-area.dragging {
+  background: #e8f5e8;
+  border-color: #4ade80;
+}
+
+.dropzone-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px auto;
+  border: 2px solid #22c55e;
+  color: #22c55e;
+}
+
+.dropzone-text p {
+  color: #1f2937;
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* File input styling */
+.file-input-hidden {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* -------------------------------
+   Uploaded Files Display
+---------------------------------*/
+.uploaded-files {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px 16px;
+  min-width: 200px;
+  position: relative;
+}
+
+.file-icon {
+  flex-shrink: 0;
+}
+
+.file-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.file-avatar::after {
+  content: '';
+  width: 16px;
+  height: 16px;
+  background: #ffffff;
+  border-radius: 2px;
+}
+
+.file-name {
+  font-size: 14px;
+  color: #1f2937;
+  font-weight: 500;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.2s;
+  flex-shrink: 0;
+}
+
+.remove-btn:hover {
+  color: #ef4444;
+}
+
+/* -------------------------------
+   File Info and Button
+---------------------------------*/
+.file-info {
+  color: #6b7280;
+  font-size: 14px;
+  margin: 0 0 24px 0;
+  text-align: center;
+}
+
+.analyze-btn-custom {
+  width: 100%;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 16px;
+  padding: 16px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.analyze-btn-custom:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+}
+
+.analyze-btn-custom:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* -------------------------------
+   Responsive Design
+---------------------------------*/
+@media (max-width: 768px) {
+  .header-card,
+  .job-description-card,
+  .file-upload-card {
+    padding: 20px;
+    margin: 0 16px 20px 16px;
+    max-width: calc(100% - 32px);
+  }
+  
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .uploaded-files {
+    flex-direction: column;
+  }
+  
+  .file-item {
+    min-width: auto;
+  }
+  
+  .dropzone-area {
+    padding: 30px 16px;
+  }
+}
+
+/* Updated form container to match new design */
+.form-container {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border: none !important;
+  max-width: none !important;
+  margin: 0 !important;
+}
+
+/* Hide original form styling when using new design */
+.form-container form {
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+}
+
+.form-container .space-y-6 > div {
+  background: transparent;
+}
+.scroll-to-top-btn {
+position: fixed;
+bottom: 20px;
+right: 20px;
+background: linear-gradient(to right, #60a5fa, #a78bfa);
+color: white;
+width: 50px;
+height: 50px;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+border: none;
+cursor: pointer;
+transition: all 0.3s ease;
+z-index: 1000;
+}
+.scroll-to-top-btn:hover {
+box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+background: linear-gradient(to right, #3b82f6, #8b5cf6);
 }
