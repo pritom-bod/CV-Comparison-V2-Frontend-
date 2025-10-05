@@ -76,7 +76,7 @@ interface JsonData {
 export default function Page() {
   
   const API_URL =
-    process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/compare-cvs/";
+    process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/compare-cvs/" || "http://192.168.1.17:8000/api/compare-cvs/";
   const [tor, setTor] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
@@ -522,7 +522,7 @@ const scrollToTop = () => {
               placeholder="Paste the detailed Terms of Reference here..."
             />
             <p className="mt-1 text-sm text-gray-500">
-              Paste the full job requirements or Terms of Reference.
+              Paste the full job requirements here.
             </p>
           </div>
 
