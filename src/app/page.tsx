@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Upload, FileText, AlertCircle, ChevronRight, Menu, X, Download } from "lucide-react";
+import { Upload, FileText, AlertCircle, ChevronRight, X, Download, Image } from "lucide-react";
 import { saveAs } from "file-saver";
 import { ArrowUp } from "lucide-react";
+import { createWorker } from 'tesseract.js';
 
 interface Scores {
   general_qualifications: {
@@ -74,45 +75,76 @@ interface JsonData {
 }
 
 export default function Page() {
-  
   const API_URL =
-    process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/compare-cvs/" || "http://192.168.1.17:8000/api/compare-cvs/";
+    process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/compare-cvs/";
   const [tor, setTor] = useState("");
+  const [torImage, setTorImage] = useState<File | null>(null);
+  const [ocrLoading, setOcrLoading] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<JsonData | null>(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+
   useEffect(() => {
-  const toggleVisibility = () => {
-    if (window.pageYOffset > 100) {
-      setIsVisible(true);
-    } else {
-      setIsVisible(false);
+    const toggleVisibility = () => {
+      if (window.pageYOffset > 100) {
+        setIsVisible(true);
+      } else {
+        setIsVisible(false);
+      }
+    };
+    window.addEventListener("scroll", toggleVisibility);
+    return () => window.removeEventListener("scroll", toggleVisibility);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  const handleTorImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setError(null);
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      if (file.size > 5 * 1024 * 1024) {
+        setError("ToR image file too large (max 5MB).");
+        return;
+      }
+      if (!["image/jpeg", "image/png", "image/jpg"].includes(file.type)) {
+        setError("Only JPEG/PNG images allowed for ToR.");
+        return;
+      }
+      setTorImage(file);
+      setOcrLoading(true);
+      setTor(""); // Clear previous ToR text
+      try {
+        const worker = await createWorker('eng', 1, {
+          logger: (m) => console.log(m),
+        });
+        const { data: { text } } = await worker.recognize(file);
+        setTor(text.trim()); // Populate main ToR textarea
+        await worker.terminate();
+      } catch (err) {
+        setError("Failed to extract text from ToR image. Try a clearer image or type/paste the ToR manually.");
+        console.error("OCR error:", err);
+      } finally {
+        setOcrLoading(false);
+      }
     }
   };
-  window.addEventListener("scroll", toggleVisibility);
-  return () => window.removeEventListener("scroll", toggleVisibility);
-}, []);
 
-const scrollToTop = () => {
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth",
-  });
-};
-  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setData(null);
 
-    
     if (!tor) {
-      setError("Please enter the Terms of Reference (ToR).");
+      setError("Please enter ToR text or upload a ToR image to extract text.");
       return;
     }
     if (files.length === 0) {
@@ -125,7 +157,7 @@ const scrollToTop = () => {
     }
 
     const formData = new FormData();
-    formData.append("tor", tor);
+    formData.append("tor", tor); // Send typed or extracted ToR text
     files.forEach((file) => formData.append("cvs", file));
 
     setLoading(true);
@@ -169,6 +201,11 @@ const scrollToTop = () => {
 
   const removeFile = (index: number) => {
     setFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const removeTorImage = () => {
+    setTorImage(null);
+    setTor(""); // Clear ToR text when image is removed
   };
 
   const getBadgeColor = (recommendation: string) => {
@@ -482,27 +519,26 @@ const scrollToTop = () => {
                 />
               </div>
               <h1 className="text-xl item-center sm:text-2xl font-bold text-blue-900 dark:text-blue-800 flex items-center">CV
-             <span className="text-red-700 color dark:text-red-800"> Comparison </span>
-             <span className="text-red-700 dark:text-red-800"> Tool</span></h1>
+                <span className="text-red-700 color dark:text-red-800"> Comparison </span>
+                <span className="text-red-700 dark:text-red-800"> Tool</span>
+              </h1>
             </div>
           </div>
         </div>
       </nav>
       {/* Main Content */}
       <div className="container mx-auto pt-20 pb-8 px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        
-
         {/* Job Description Section */}
         <div className="job-description-card">
           <div className="card-header">
             <h2>Job Description (ToR)</h2>
+            
             <button
               className="view-full-btn"
               type="button"
               onClick={() => {
                 if (!tor.trim() && !isModalOpen) {
-                  alert("Please paste the Terms of Reference first.");
+                  alert("Please paste, type, or upload a ToR image to populate the Terms of Reference.");
                   return;
                 }
                 setIsModalOpen(!isModalOpen);
@@ -510,20 +546,23 @@ const scrollToTop = () => {
             >
               {isModalOpen ? "- View Full ToR" : "+ View Full ToR"}
             </button>
+            
           </div>
+          <p className="mt-1 text-sm text-gray-500">
+              Paste or type the job requirements, or upload an image below to extract text automatically.
+            </p>
 
-          {/* Textarea for ToR Input */}
+          {/* Textarea for Typing/Pasting or Extracted ToR */}
           <div className="mt-4">
             <textarea
               value={tor}
               onChange={(e) => setTor(e.target.value)}
               rows={6}
               className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-              placeholder="Paste the detailed Terms of Reference here..."
+              placeholder="Paste, type, or upload a ToR image to populate the Terms of Reference here..."
+              aria-label="Terms of Reference input"
             />
-            <p className="mt-1 text-sm text-gray-500">
-              Paste the full job requirements here.
-            </p>
+            
           </div>
 
           {/* Modal for Full ToR */}
@@ -563,11 +602,56 @@ const scrollToTop = () => {
               </div>
             </div>
           )}
+          <br />
+          <h2 className="OR">OR</h2>
+          <div className="">
+          <div className="card-header">
+           <h2>Upload Job Description (ToR) Image</h2>
+          </div>
+          <div className="mt-4">
+            <label
+              htmlFor="tor-image"
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md cursor-pointer hover:bg-blue-700 transition mb-2"
+            >
+              <Upload size={16} className="mr-2" />
+              Choose ToR Image
+            </label>
+            <input
+              id="tor-image"
+              type="file"
+              accept="image/jpeg,image/png,image/jpg"
+              onChange={handleTorImageChange}
+              className="hidden"
+              aria-label="Upload ToR image"
+            />
+            {torImage && (
+              <div className="flex items-center space-x-2 mt-2">
+                <Image size={16} className="text-blue-500" />
+                <span>{torImage.name}</span>
+                <button onClick={removeTorImage} className="remove-btn">
+                  <X size={16} />
+                </button>
+              </div>
+            )}
+            {ocrLoading && (
+              <div className="mt-2 flex items-center space-x-2">
+                <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                <p className="text-sm text-blue-600">Extracting text to populate ToR input...</p>
+              </div>
+            )}
+            <p className="mt-1 text-sm text-gray-500">
+              Upload a clear image of the ToR (JPEG/PNG, max 5MB). The extracted text will automatically populate the ToR input above.
+            </p>
+          </div>
         </div>
 
+        </div>
+
+        {/* ToR Image Upload Section */}
+        
         {/* File Upload Section */}
         <div className="file-upload-card">
-          <h2>File Upload</h2>
+          <h2>Upload CVs</h2>
           
           <div
             className={`dropzone-area ${isDragging ? "dragging" : ""}`}
@@ -579,7 +663,7 @@ const scrollToTop = () => {
               <Upload size={24} />
             </div>
             <div className="dropzone-text">
-              <p>Drag & Drop upto 10 CVs here or click to browse</p>
+              <p>Drag & Drop up to 10 CVs here or click to browse</p>
             </div>
             
             <input
@@ -623,7 +707,7 @@ const scrollToTop = () => {
           <button 
             className="analyze-btn-custom"
             onClick={handleSubmit}
-            disabled={loading}
+            disabled={loading || ocrLoading}
           >
             {loading ? 'Analyzing...' : 'Analyze CVs'}
           </button>
@@ -637,7 +721,7 @@ const scrollToTop = () => {
           </div>
         )}
 
-        {/* Improved Loading Overlay */}
+        {/* Loading Overlay */}
         {loading && (
           <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 shadow-lg flex items-center space-x-4">
@@ -649,18 +733,18 @@ const scrollToTop = () => {
       </div>
 
       {/* Results */}
-      
       {data && (
         <div className="space-y-10 mt-10">
-        <div className="button-container">
-  <button
-    onClick={() => generateDocxReport(data)}
-    className="download-button"
-    aria-label="Download report as DOCX">
-    <Download size={16} />
-    Download Report
-  </button>
-</div>
+          <div className="button-container">
+            <button
+              onClick={() => generateDocxReport(data)}
+              className="download-button"
+              aria-label="Download report as DOCX"
+            >
+              <Download size={16} />
+              Download Report
+            </button>
+          </div>
 
           {/* ToR */}
           <section className="section bg-white shadow-md rounded-lg p-4">
@@ -828,27 +912,24 @@ const scrollToTop = () => {
                         </span>
                       </div>
                     </div>
-                    
-                        { <div className="scores-category-header flex items-center gap-2 text-lg font-semibold text-gray-800">
-                          <ChevronRight size={18} className="text-blue-500" />
-                          Total Score - 100%
-                        </div>}
-                        {<div className="scores-subitem flex justify-between text-gray-700 mt-2">
-                          <span>Total</span>
-                          <span>
-                            {c.scores?.total_score != null
-                              ? c.scores.total_score.toFixed(2)
-                              : "N/A"}
-                          </span>
-                          
-                          </div>}
-                          {<div className="scores-subitem flex justify-between text-gray-700 mt-2">
-                          <span>  </span>
-                          <span className="text-xs italic text-">
-                            ( This score is approximate; it may vary by ±5)
-                          </span>
-                          
-                          </div>}
+                    <div className="scores-category-header flex items-center gap-2 text-lg font-semibold text-gray-800">
+                      <ChevronRight size={18} className="text-blue-500" />
+                      Total Score - 100%
+                    </div>
+                    <div className="scores-subitem flex justify-between text-gray-700 mt-2">
+                      <span>Total</span>
+                      <span>
+                        {c.scores?.total_score != null
+                          ? c.scores.total_score.toFixed(2)
+                          : "N/A"}
+                      </span>
+                    </div>
+                    <div className="scores-subitem flex justify-between text-gray-700 mt-2">
+                      <span></span>
+                      <span className="text-xs italic">
+                        (This score is approximate; it may vary by ±5)
+                      </span>
+                    </div>
                   </div>
                   <details className="details-section mt-4">
                     <summary className="cursor-pointer text-blue-600 font-medium hover:text-blue-800 transition">
@@ -1020,12 +1101,12 @@ const scrollToTop = () => {
             </div>
           </section>
           {isVisible && (
-  <div className="scroll-to-top-container">
-    <button onClick={scrollToTop} className="scroll-to-top-btn">
-      <ArrowUp size={24} />
-    </button>
-  </div>
-)}
+            <div className="scroll-to-top-container">
+              <button onClick={scrollToTop} className="scroll-to-top-btn">
+                <ArrowUp size={24} />
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
